@@ -21,7 +21,7 @@ public class ScrapperService {
     private static final String REFERRER = "https://www.google.com";
     private static final int MIN_DELAY = 1000;  // 1 second
     private static final int MAX_DELAY = 5000;  // 5 seconds
-    private final static Integer NUMBER_PAGES = 10;
+    private final static Integer NUMBER_PAGES = 2;
     private final ArrayList<Product> choiceProducts = new ArrayList<>();
     private  Document document;
     public void connect(String url) throws IOException {
@@ -61,7 +61,6 @@ public class ScrapperService {
             futures.add(executorService.submit(() -> {
                 try {
                     connect(url);
-                    System.out.println(document);
                     return extractProducts();
                 } catch (IOException e) {
                     e.printStackTrace();
