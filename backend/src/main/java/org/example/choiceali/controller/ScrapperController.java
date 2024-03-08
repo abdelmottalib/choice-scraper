@@ -19,6 +19,7 @@ public class ScrapperController {
     }
     @GetMapping("{product}")
     public List<Product> getScrappedProduct(@PathVariable String product) {
+        System.out.println("Product: " + product);
         return scrapperService.scrapeProduct(product);
     }
 }

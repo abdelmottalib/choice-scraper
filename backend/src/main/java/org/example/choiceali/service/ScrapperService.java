@@ -21,7 +21,7 @@ public class ScrapperService {
     private static final String REFERRER = "https://www.google.com";
     private static final int MIN_DELAY = 1000;  // 1 second
     private static final int MAX_DELAY = 5000;  // 5 seconds
-    private final static Integer NUMBER_PAGES = 2;
+    private final static Integer NUMBER_PAGES = 5;
     private final ArrayList<Product> choiceProducts = new ArrayList<>();
     private  Document document;
     public void connect(String url) throws IOException {
@@ -30,6 +30,7 @@ public class ScrapperService {
                 .referrer(REFERRER)
                 .timeout(5000)
                 .get();
+        System.out.println(document);
     }
     private void randomDelay() {
         try {
@@ -56,7 +57,7 @@ public class ScrapperService {
         ExecutorService executorService = Executors.newFixedThreadPool(NUMBER_PAGES);
         List<Future<ArrayList<Product>>> futures = new ArrayList<>();
 
-        for (int i = 0; i <= NUMBER_PAGES; i++) {
+        for (int i = 1; i <= NUMBER_PAGES; i++) {
             String url = buildAliexpressUrl(searchedProductName, i);
             futures.add(executorService.submit(() -> {
                 try {
@@ -90,9 +91,9 @@ public class ScrapperService {
             boolean choice = product.select("img[src='https://ae01.alicdn.com/kf/S1887a285b60743859ac7bdbfca5e0896Z/154x64.png']").size()>0;
             if (choice) {
                 String image = product.select("img").attr("src");
-                image = makeLinks(image.substring(2));
+                image = image.substring(2);
                 String productLink = product.select("a").attr("href");
-                productLink = makeLinks(productLink.substring(2));
+                productLink = productLink.substring(2);
                 Element soldSpan = product.select("span:containsOwn(sold)").first();
                 String amountSold = soldSpan != null ? soldSpan.text() : "N/A";
                 String productName = product.select("h3").first().text();
