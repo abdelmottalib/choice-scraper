@@ -22,7 +22,6 @@ public class ScrapperService {
     private static final int MIN_DELAY = 1000;  // 1 second
     private static final int MAX_DELAY = 5000;  // 5 seconds
     private final static Integer NUMBER_PAGES = 5;
-    private final ArrayList<Product> choiceProducts = new ArrayList<>();
     private  Document document;
     public void connect(String url) throws IOException {
         this.document = Jsoup.connect(url)
@@ -30,7 +29,7 @@ public class ScrapperService {
                 .referrer(REFERRER)
                 .timeout(5000)
                 .get();
-        System.out.println(document);
+//        System.out.println(document);
     }
     private void randomDelay() {
         try {
@@ -57,12 +56,13 @@ public class ScrapperService {
         ExecutorService executorService = Executors.newFixedThreadPool(NUMBER_PAGES);
         List<Future<ArrayList<Product>>> futures = new ArrayList<>();
 
+        ArrayList<Product> choiceProducts = new ArrayList<>();
         for (int i = 1; i <= NUMBER_PAGES; i++) {
             String url = buildAliexpressUrl(searchedProductName, i);
             futures.add(executorService.submit(() -> {
                 try {
                     connect(url);
-                    return extractProducts();
+                    return extractProducts(choiceProducts);
                 } catch (IOException e) {
                     e.printStackTrace();
                     return new ArrayList<>();
@@ -85,7 +85,7 @@ public class ScrapperService {
         return allProducts;
     }
 
-    private ArrayList<Product> extractProducts() {
+    private ArrayList<Product> extractProducts(ArrayList<Product> choiceProducts) {
         Elements products = document.select("div.search-item-card-wrapper-gallery");
         for (Element product : products) {
             boolean choice = product.select("img[src='https://ae01.alicdn.com/kf/S1887a285b60743859ac7bdbfca5e0896Z/154x64.png']").size()>0;
