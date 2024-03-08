@@ -19,8 +19,10 @@ import java.util.concurrent.Future;
 public class ScrapperService {
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36";
     private static final String REFERRER = "https://www.google.com";
-    private final ArrayList<Product> choiceProducts = new ArrayList<>();
+    private static final int MIN_DELAY = 1000;  // 1 second
+    private static final int MAX_DELAY = 5000;  // 5 seconds
     private final static Integer NUMBER_PAGES = 10;
+    private final ArrayList<Product> choiceProducts = new ArrayList<>();
     private  Document document;
     public void connect(String url) throws IOException {
         this.document = Jsoup.connect(url)
@@ -28,6 +30,14 @@ public class ScrapperService {
                 .referrer(REFERRER)
                 .timeout(5000)
                 .get();
+    }
+    private void randomDelay() {
+        try {
+            int delay = MIN_DELAY + (int) (Math.random() * (MAX_DELAY - MIN_DELAY + 1));
+            Thread.sleep(delay);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
     public String makeLinks(String url) {
         return "http//" + url;
@@ -58,6 +68,7 @@ public class ScrapperService {
                     return new ArrayList<>();
                 }
             }));
+            randomDelay();
         }
 
         ArrayList<Product> allProducts = new ArrayList<>();
