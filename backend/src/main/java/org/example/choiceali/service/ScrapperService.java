@@ -68,7 +68,7 @@ public class ScrapperService {
                     return new ArrayList<>();
                 }
             }));
-            randomDelay();
+//            randomDelay();
         }
 
         ArrayList<Product> allProducts = new ArrayList<>();
