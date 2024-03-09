@@ -10,7 +10,6 @@ import lombok.Setter;
 @Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class Product {
     String name;
     String amount;
