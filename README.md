@@ -19,7 +19,6 @@ This project is a web application that utilizes Spring Boot for backend developm
 - Java Development Kit (JDK) 17 or later
 - Node.js and npm
 - IDE of your choice (e.g., IntelliJ IDEA, Eclipse)
-- Git
 
 ## Getting Started
 
