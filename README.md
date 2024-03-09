@@ -46,7 +46,6 @@ This project is a web application that utilizes Spring Boot for backend developm
    ```
   **The frontend will run on http://localhost:3000**
   
-  
 ### Usage
 
   1. **Access the React frontend in your web browser.**
