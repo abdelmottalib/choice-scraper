@@ -16,4 +16,5 @@ public class Product {
     String image;
     String link;
     String price;
+   boolean choice;
 }

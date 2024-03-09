@@ -68,7 +68,7 @@ public class ScrapperService {
                     return new ArrayList<>();
                 }
             }));
-//            randomDelay();
+            randomDelay();
         }
 
         ArrayList<Product> allProducts = new ArrayList<>();
@@ -88,8 +88,8 @@ public class ScrapperService {
     private ArrayList<Product> extractProducts(ArrayList<Product> choiceProducts) {
         Elements products = document.select("div.search-item-card-wrapper-gallery");
         for (Element product : products) {
-            boolean choice = product.select("img[src='https://ae01.alicdn.com/kf/S1887a285b60743859ac7bdbfca5e0896Z/154x64.png']").size()>0;
-            if (choice) {
+            boolean freeShipping = product.select("span:contains(Free Shipping)").size() > 0;
+            if (freeShipping) {
                 String image = product.select("img").attr("src");
                 image = image.substring(2);
                 String productLink = product.select("a").attr("href");
@@ -97,6 +97,7 @@ public class ScrapperService {
                 Element soldSpan = product.select("span:containsOwn(sold)").first();
                 String amountSold = soldSpan != null ? soldSpan.text() : "N/A";
                 String productName = product.select("h3").first().text();
+                boolean choice = product.select("img[src='https://ae01.alicdn.com/kf/S1887a285b60743859ac7bdbfca5e0896Z/154x64.png']").size()>0;
                 Elements priceSpans = product.select("span[style*=currency-symbol:MAD]");
                 StringBuilder priceBuilder = new StringBuilder();
                 for (Element priceSpan : priceSpans) {
@@ -104,7 +105,9 @@ public class ScrapperService {
                 }
                 priceBuilder.replace(0,3, "").append(" MAD");
                 String completePrice = priceBuilder.toString();
-                Product element = Product.builder().name(productName).link(productLink).image(image).amount(amountSold).price(completePrice).build();
+                Product element = Product.builder().name(productName)
+                        .link(productLink).choice(choice).image(image)
+                        .amount(amountSold).price(completePrice).build();
                 choiceProducts.add(element);
             }
         }
