@@ -21,7 +21,7 @@ public class ScrapperService {
     private static final String REFERRER = "https://www.google.com";
     private static final int MIN_DELAY = 1000;  // 1 second
     private static final int MAX_DELAY = 5000;  // 5 seconds
-    private final static Integer NUMBER_PAGES = 10;
+    private final static Integer NUMBER_PAGES = 5;
     private  Document document;
     public void connect(String url) throws IOException {
         this.document = Jsoup.connect(url)
@@ -43,13 +43,10 @@ public class ScrapperService {
         return "http//" + url;
     }
     private String buildAliexpressUrl(String productName, int page) {
-        return UriComponentsBuilder.newInstance()
-                .scheme("https")
-                .host("www.aliexpress.com")
-                .path("/w/wholesale-" + productName + ".html")
-                .queryParam("page", page)
-                .build()
-                .toUriString();
+        StringBuilder stringBuilder = new StringBuilder("https://www.aliexpress.com/w/wholesale-");
+        return stringBuilder.append(productName).append(".html")
+                .append("?page=").append(page).append("&g=y&SearchText=").append(productName)
+                .append("&sortType=total_tranpro_desc").toString();
     }
 
     public ArrayList<Product> scrapeProduct(String searchedProductName) {
@@ -59,6 +56,7 @@ public class ScrapperService {
         ArrayList<Product> choiceProducts = new ArrayList<>();
         for (int i = 1; i <= NUMBER_PAGES; i++) {
             String url = buildAliexpressUrl(searchedProductName, i);
+            System.out.println(url);
             futures.add(executorService.submit(() -> {
                 try {
                     connect(url);
@@ -92,6 +90,14 @@ public class ScrapperService {
             if (freeShipping) {
                 String image = product.select("img").attr("src");
                 image = image.substring(2);
+                if (image.startsWith("//")) {
+                    image = image.replaceAll(".*?(ae01[^.]+).*", "$1");
+                }
+
+                // Ensure the link starts with "ae01"
+                if (!image.startsWith("ae01")) {
+                    continue; // Skip this product if the link doesn't start with "ae01"
+                }
                 String productLink = product.select("a").attr("href");
                 productLink = productLink.substring(2);
                 Element soldSpan = product.select("span:containsOwn(sold)").first();
