@@ -1,4 +1,5 @@
 package org.example.choiceali.service;
+
 import org.example.choiceali.entity.Product;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -6,6 +7,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,15 +24,17 @@ public class ScrapperService {
     private static final int MIN_DELAY = 1000;  // 1 second
     private static final int MAX_DELAY = 5000;  // 5 seconds
     private final static Integer NUMBER_PAGES = 5;
-    private  Document document;
+    private Document document;
+
     public void connect(String url) throws IOException {
         this.document = Jsoup.connect(url)
                 .userAgent(USER_AGENT)
                 .referrer(REFERRER)
                 .timeout(5000)
                 .get();
-//        System.out.println(document);
+//        
     }
+
     private void randomDelay() {
         try {
             int delay = MIN_DELAY + (int) (Math.random() * (MAX_DELAY - MIN_DELAY + 1));
@@ -39,9 +43,11 @@ public class ScrapperService {
             Thread.currentThread().interrupt();
         }
     }
+
     public String makeLinks(String url) {
         return "http//" + url;
     }
+
     private String buildAliexpressUrl(String productName, int page) {
         StringBuilder stringBuilder = new StringBuilder("https://www.aliexpress.com/w/wholesale-");
         return stringBuilder.append(productName).append(".html")
@@ -56,7 +62,7 @@ public class ScrapperService {
         ArrayList<Product> choiceProducts = new ArrayList<>();
         for (int i = 1; i <= NUMBER_PAGES; i++) {
             String url = buildAliexpressUrl(searchedProductName, i);
-            System.out.println(url);
+
             futures.add(executorService.submit(() -> {
                 try {
                     connect(url);
@@ -79,7 +85,7 @@ public class ScrapperService {
         }
 
         executorService.shutdown();
-        System.out.println(allProducts.size());
+
         return allProducts;
     }
 
@@ -93,23 +99,24 @@ public class ScrapperService {
                 if (image.startsWith("//")) {
                     image = image.replaceAll(".*?(ae01[^.]+).*", "$1");
                 }
-
-                // Ensure the link starts with "ae01"
                 if (!image.startsWith("ae01")) {
-                    continue; // Skip this product if the link doesn't start with "ae01"
+                    continue;
                 }
                 String productLink = product.select("a").attr("href");
                 productLink = productLink.substring(2);
+                if (productLink.startsWith("tps://")) {
+                    productLink = productLink.replaceAll(".*?(www.aliexpress.com[^.]+).*", "$1");
+                }
                 Element soldSpan = product.select("span:containsOwn(sold)").first();
                 String amountSold = soldSpan != null ? soldSpan.text() : "N/A";
                 String productName = product.select("h3").first().text();
-                boolean choice = product.select("img[src='https://ae01.alicdn.com/kf/S1887a285b60743859ac7bdbfca5e0896Z/154x64.png']").size()>0;
+                boolean choice = product.select("img[src='https://ae01.alicdn.com/kf/S1887a285b60743859ac7bdbfca5e0896Z/154x64.png']").size() > 0;
                 Elements priceSpans = product.select("span[style*=currency-symbol:MAD]");
                 StringBuilder priceBuilder = new StringBuilder();
                 for (Element priceSpan : priceSpans) {
                     priceBuilder.append(priceSpan.text());
                 }
-                priceBuilder.replace(0,3, "").append(" MAD");
+                priceBuilder.replace(0, 3, "").append(" MAD");
                 String completePrice = priceBuilder.toString();
                 Product element = Product.builder().name(productName)
                         .link(productLink).choice(choice).image(image)

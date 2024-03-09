@@ -56,7 +56,6 @@ const Home = () => {
   };
 
   function handleFilterChange(option: string | null): void {
-    console.log(option);
     setFilterOption(option);
   }
   useEffect(() => {
@@ -124,7 +123,7 @@ const Home = () => {
       {/* Display Products */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {products.map((product, index) => (
-          <ProductCard key={generateRandomKey(index.toString())} product={product} />
+          <ProductCard key={generateRandomKey(index)} product={product} />
         ))}
       </div>
     </div>
