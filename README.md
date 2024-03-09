@@ -1,4 +1,4 @@
-# AliExpress Product Scraper
+# AliExpress Choice Product Scraper
 
 ## Overview
 
