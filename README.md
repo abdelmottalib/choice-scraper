@@ -27,7 +27,7 @@ This project is a web application that utilizes Spring Boot for backend developm
 1. **Clone the repository:**
 
    ```bash
-    git clone https://github.com/abdelmottalib/aliexpressChoice-scrapper/
+    git clone https://github.com/abdelmottalib/choice-scraper/
    ```
 2. **Open the backend directory in your preferred IDE.**
 
@@ -40,7 +40,7 @@ This project is a web application that utilizes Spring Boot for backend developm
  **Clone the repository:**
 
    ```bash
-    cd aliexpressChoice-scrapper/frontend
+    cd choice-scraper/frontend
     npm install
     npm run dev
    ```
